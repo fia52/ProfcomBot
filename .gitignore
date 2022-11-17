@@ -1,0 +1,5 @@
+config.py
+profcom_base.db
+profcom_base.sqbpro
+.idea
+__pycache__
