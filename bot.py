@@ -1,7 +1,7 @@
 from aiogram.utils import executor
 from bot_init import dp
-from handlers import client, admin, other
 from data_base.sqlite_db import sql_start
+from handlers.handlers_main import register_all_handlers
 
 
 async def on_startup(_):
@@ -10,9 +10,7 @@ async def on_startup(_):
 
 
 def start_bot():
-    admin.register_handlers_admin(dp)
-    client.register_handlers_client(dp)
-    other.register_handlers_other(dp)
+    register_all_handlers(dp)
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
 
 
