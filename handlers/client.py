@@ -17,6 +17,7 @@ async def get_student_info(message: types.Message):
 
 
 async def get_info_by_student_id(message: types.Message, state: FSMContext):
+    """Получаем и выдаём информацию о профкарте студента по его студенческому."""
     try:
         response = sqlite_db.sql_get_prof_id_command(message.text)
         await message.reply(response, reply_markup=client_kb.starting_kb_client)
@@ -27,6 +28,7 @@ async def get_info_by_student_id(message: types.Message, state: FSMContext):
 
 
 async def commands_start(message: types.message):
+    """Отлавливаем команду старт и выводим клиентскую клавиатуру."""
     try:
         await bot.send_message(message.from_user.id, 'Добро пожаловать, бот профкома на связи!',
                                reply_markup=client_kb.starting_kb_client)

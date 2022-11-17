@@ -8,17 +8,18 @@ from keyboards import admin_kb, client_kb
 ID = None
 
 
-class FSMadmin(StatesGroup):  # машина состояний1
+class MakingRecordFSM(StatesGroup):  # машина состояний1
     student_profcom_id = State()
     reason_for_help = State()
     making_record_approval = State()
 
 
-class FSMgettingInfoByAdmin(StatesGroup):  # машина состояний2
+class GettingInfoFSM(StatesGroup):  # машина состояний2
     student_profcom_id = State()
 
 
 async def admin_check(message: types.Message):
+    """Отлавливаем лишь сообщение от админа группы, выводим клавиатуру админа."""
     global ID
     ID = message.from_user.id
     await bot.send_message(message.from_user.id, "Приветствую члена профкома!", reply_markup=admin_kb.starting_kb_admin)
@@ -28,14 +29,14 @@ async def admin_check(message: types.Message):
 async def get_student_info_start(message: types.Message):
     """Начало диалога предоставления информации о студенте."""
     if message.from_user.id == ID:
-        await FSMgettingInfoByAdmin.student_profcom_id.set()
+        await GettingInfoFSM.student_profcom_id.set()
         await message.reply('Введите номер профкарты кандидата на мат помощь')
 
 
 async def making_record_start(message: types.Message):
     """Начало диалога внесения записи о новом выделении матпомощи."""
     if message.from_user.id == ID:
-        await FSMadmin.student_profcom_id.set()
+        await MakingRecordFSM.student_profcom_id.set()
         await message.reply('Введите номер профкарты кандидата на мат помощь')
 
 
@@ -52,9 +53,9 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
 
 async def get_info_by_prof_id(message: types.Message, state: FSMContext):
+    """Получаем и выдаём информацию о студенте по его проф карте."""
     try:
         response = sqlite_db.sql_get_line_command(message.text)
-        print(response)
         await message.reply(response, reply_markup=admin_kb.starting_kb_admin)
     except:
         await message.reply('Видимо, вы ошиблись номером профкарты', reply_markup=admin_kb.starting_kb_admin)
@@ -66,7 +67,7 @@ async def load_student_profcom_id(message: types.Message, state: FSMContext):
     """Ловим номер профкарты и записываем в словарь."""
     async with state.proxy() as data:
         data['profcom_id'] = message.text
-    await FSMadmin.next()
+    await MakingRecordFSM.next()
     await message.reply('Теперь введите причину', reply_markup=admin_kb.reasons_kb_admin)
 
 
@@ -77,7 +78,7 @@ async def load_reason_for_help(message: types.Message, state: FSMContext):
     try:
         flag = sqlite_db.opportunity_of_mat_help_bd(data.get('profcom_id'))
         if flag:
-            await FSMadmin.next()
+            await MakingRecordFSM.next()
             await message.reply('Внести новую запись о назначении материальной помощи?',
                                 reply_markup=admin_kb.approval_kb_admin)
         else:
@@ -105,9 +106,9 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(cancel_handler, state="*", commands='отмена')
     dp.register_message_handler(cancel_handler, filters.Text(equals='отмена', ignore_case=True), state="*")
     dp.register_message_handler(get_info_by_prof_id, filters.Regexp(r'\b\d{2}-\d{4}\b'),
-                                state=FSMgettingInfoByAdmin.student_profcom_id)
+                                state=GettingInfoFSM.student_profcom_id)
     dp.register_message_handler(load_student_profcom_id, filters.Regexp(r'\b\d{2}-\d{4}\b'),
-                                state=FSMadmin.student_profcom_id)
-    dp.register_message_handler(load_reason_for_help, state=FSMadmin.reason_for_help)
-    dp.register_message_handler(making_record, state=FSMadmin.making_record_approval)
+                                state=MakingRecordFSM.student_profcom_id)
+    dp.register_message_handler(load_reason_for_help, state=MakingRecordFSM.reason_for_help)
+    dp.register_message_handler(making_record, state=MakingRecordFSM.making_record_approval)
     dp.register_message_handler(admin_check, commands=['moderator'], is_chat_admin=True)
