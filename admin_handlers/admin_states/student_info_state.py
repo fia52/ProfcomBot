@@ -18,7 +18,7 @@ async def getting_info_start(message: types.Message) -> None:
 
 async def info_with_id(message: types.Message, state: FSMContext) -> None:
     """Получаем и выдаём информацию о студенте по его проф карте."""
-    response = await sqlite_db.get_line(message.text, message)
+    response = await db_funcs.get_line(message.text, message)
     if response:
         await message.reply(response, reply_markup=admin_kb.starting_kb_admin)
     await state.finish()

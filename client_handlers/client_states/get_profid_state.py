@@ -18,7 +18,7 @@ async def student_info_load(message: types.Message) -> None:
 
 async def prof_id_load(message: types.Message, state: FSMContext) -> None:
     """Получаем и выдаём информацию о профкарте студента по его студенческому."""
-    profcom_id = await sqlite_db.get_prof_id(message.text, message)
+    profcom_id = await db_funcs.get_prof_id(message.text, message)
     if profcom_id:
         response = f"Номер вашей профкарты: {profcom_id}"
         await message.reply(response, reply_markup=client_kb.starting_kb_client)

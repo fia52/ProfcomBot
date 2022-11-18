@@ -30,7 +30,7 @@ async def get_help_reason(message: types.Message, state: FSMContext) -> None:
     """Ловим название причины."""
     async with state.proxy() as data:
         data['reason'] = message.text
-    flag = await sqlite_db.mat_help_opportunity(data.get('profcom_id'), message)
+    flag = await db_funcs.mat_help_opportunity(data.get('profcom_id'), message)
     if flag == 999:
         await state.finish()
         return
@@ -47,7 +47,7 @@ async def get_help_reason(message: types.Message, state: FSMContext) -> None:
 async def making_record(message: types.Message, state: FSMContext) -> None:
     """Отлавливаем подтверждение и вносим изменения в БД."""
     if message.text == 'Да':
-        await sqlite_db.sql_add_command(state)
+        await db_funcs.sql_add_command(state)
         await message.reply('Запись внесена', reply_markup=admin_kb.starting_kb_admin)
     else:
         await message.reply('OK', reply_markup=admin_kb.starting_kb_admin)
