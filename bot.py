@@ -1,11 +1,11 @@
 from aiogram.utils import executor
 
 from bot_init import dp
-from data_base.sqlite_db import sql_start
-from handlers.handlers_main import register_all_handlers
+from data_base.db_funcs import sql_start
+from handlers_main import register_all_handlers
 
 
-async def on_startup(_):
+async def on_startup():
     print('Bot is now online')
     sql_start()
 

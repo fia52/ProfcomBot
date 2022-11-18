@@ -6,7 +6,7 @@ from aiogram import types, Dispatcher
 
 async def cenz_checker(message: types.message) -> None:
     if {i.lower().translate(str.maketrans('', '', string.punctuation)) for i in message.text.split(' ')} \
-            .intersection(set(json.load(open('cenz/cenz.json')))) != set():
+            .intersection(set(json.load(open('cenz_controller/cenz_controller.json')))) != set():
         await message.reply('Выражайся культурнее')
         await message.delete()
 
