@@ -8,4 +8,3 @@ def admin_require(func):
             await func(message)
 
     return wrapper
-
