@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext, filters
 
 from data_base import db_funcs
 from keyboards import admin_kb
+from additional_tools.wrappers import admin_require
 
 
 class MakingRecordFSM(StatesGroup):  # машина состояний 1
@@ -12,6 +13,7 @@ class MakingRecordFSM(StatesGroup):  # машина состояний 1
     making_record_approval = State()
 
 
+@admin_require
 async def recording_start(message: types.Message) -> None:
     """Начало диалога внесения записи о новом выделении матпомощи."""
     await MakingRecordFSM.student_profcom_id.set()

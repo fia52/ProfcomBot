@@ -2,6 +2,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext, filters
 
+from additional_tools.wrappers import admin_require
 from data_base import db_funcs
 from keyboards import admin_kb
 
@@ -10,6 +11,7 @@ class GettingInfoFSM(StatesGroup):  # машина состояний 2
     student_profcom_id = State()
 
 
+@admin_require
 async def getting_info_start(message: types.Message) -> None:
     """Начало диалога предоставления информации о студенте."""
     await GettingInfoFSM.student_profcom_id.set()

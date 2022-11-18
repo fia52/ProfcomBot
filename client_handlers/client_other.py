@@ -1,4 +1,5 @@
 from aiogram import types, Dispatcher
+from aiogram.dispatcher import FSMContext
 
 from bot_init import bot
 from keyboards import client_kb
@@ -12,6 +13,15 @@ async def commands_start(message: types.message) -> None:
         await message.delete()
     except Exception:
         await message.reply('Общение с ботом происходит через лс, напишите ему:\nhttps://t.me/ProfUniversary_bot')
+
+
+async def cancel_handler(message: types.Message, state: FSMContext) -> None:
+    """Выход из машины состояний."""
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+    await message.reply('OK', reply_markup=client_kb.starting_kb_client)
 
 
 async def profcom_time_command(message: types.Message) -> None:
